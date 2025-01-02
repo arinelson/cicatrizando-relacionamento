@@ -28,13 +28,12 @@ const Index = () => {
     try {
       const { error } = await supabase
         .from('leads')
-        .insert([
-          { 
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone
-          }
-        ]);
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          phase: 0 // Inicialmente definimos como fase 0, será atualizado após o quiz
+        });
 
       if (error) throw error;
 
