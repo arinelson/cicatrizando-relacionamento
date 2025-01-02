@@ -9,7 +9,68 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      ebooks: {
+        Row: {
+          created_at: string | null
+          file_path: string
+          id: string
+          phase: number
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_path: string
+          id?: string
+          phase: number
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          phase?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          created_at: string | null
+          ebook_id: string | null
+          email: string
+          id: string
+          name: string
+          phase: number
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          ebook_id?: string | null
+          email: string
+          id?: string
+          name: string
+          phase: number
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          ebook_id?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phase?: number
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_ebook_id_fkey"
+            columns: ["ebook_id"]
+            isOneToOne: false
+            referencedRelation: "ebooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
