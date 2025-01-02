@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,18 +25,15 @@ const Results = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const phase = parseInt(searchParams.get("phase") || "1");
-  const [userData, setUserData] = useState<{ name: string } | null>(null);
   const [ebook, setEbook] = useState<{ title: string; file_path: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: ""
+  });
 
   useEffect(() => {
-    // Get user data from localStorage
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      setUserData(JSON.parse(storedUserData));
-    }
-
-    // Fetch ebook information
     const fetchEbook = async () => {
       try {
         const { data, error } = await supabase
@@ -71,6 +69,41 @@ const Results = () => {
     fetchEbook();
   }, [phase, toast]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.phone) {
+      toast({
+        title: "Por favor, preencha todos os campos",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          phase: phase,
+          ebook_id: ebook?.file_path
+        });
+
+      if (error) throw error;
+
+      await handleDownload();
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Erro ao salvar seus dados",
+        description: "Por favor, tente novamente",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleDownload = async () => {
     if (!ebook?.file_path) {
       toast({
@@ -88,7 +121,6 @@ const Results = () => {
 
       if (error) throw error;
 
-      // Create download link
       const url = window.URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
@@ -133,35 +165,44 @@ const Results = () => {
         </h1>
         
         <p className="text-lg text-gray-600 mb-8">
-          {userData?.name ? `Olá ${userData.name}, ` : ""}
           {currentPhaseInfo.description}
         </p>
 
-        {ebook ? (
-          <div className="bg-muted p-6 rounded-lg mb-8">
-            <h2 className="text-xl font-semibold mb-4">
-              Seu eBook está pronto:
-            </h2>
-            <p className="text-lg text-primary font-medium mb-6">
-              {ebook.title}
-            </p>
-            <Button
-              onClick={handleDownload}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-6"
-            >
-              Baixar eBook Agora
-            </Button>
+        <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+          <div>
+            <Input
+              type="text"
+              placeholder="Seu nome"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full"
+            />
           </div>
-        ) : (
-          <div className="bg-muted p-6 rounded-lg mb-8">
-            <h2 className="text-xl font-semibold mb-4">
-              eBook não disponível
-            </h2>
-            <p className="text-gray-600">
-              Desculpe, o eBook para esta fase ainda não está disponível.
-            </p>
+          <div>
+            <Input
+              type="email"
+              placeholder="Seu email"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              className="w-full"
+            />
           </div>
-        )}
+          <div>
+            <Input
+              type="tel"
+              placeholder="Seu telefone (com DDD)"
+              value={formData.phone}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              className="w-full"
+            />
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+          >
+            Baixar eBook Gratuito
+          </Button>
+        </form>
       </div>
     </div>
   );
