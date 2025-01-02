@@ -9,20 +9,25 @@ const Quiz = () => {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   const handleOptionSelect = (optionIndex: number) => {
+    setSelectedOption(optionIndex);
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = optionIndex;
     setAnswers(newAnswers);
 
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setTimeout(() => {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedOption(null);
+      }, 500);
     } else {
       const phase = calculatePhase(newAnswers);
-      navigate("/results", { state: { phase } });
+      navigate(`/results?phase=${phase}`);
     }
   };
 
@@ -48,6 +53,7 @@ const Quiz = () => {
               <QuizOption
                 key={index}
                 text={option}
+                selected={selectedOption === index}
                 onClick={() => handleOptionSelect(index)}
               />
             ))}

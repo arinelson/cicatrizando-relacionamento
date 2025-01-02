@@ -1,21 +1,18 @@
 interface ProgressBarProps {
-  current: number;
-  total: number;
+  progress: number;
 }
 
-export const ProgressBar = ({ current, total }: ProgressBarProps) => {
-  const percentage = (current / total) * 100;
-
+export const ProgressBar = ({ progress }: ProgressBarProps) => {
   return (
     <div className="w-full">
       <div className="progress-bar">
         <div 
           className="progress-bar-fill"
-          style={{ width: `${percentage}%` }}
+          style={{ width: `${progress}%` }}
         />
       </div>
       <p className="text-sm text-muted-foreground mt-2">
-        Questão {current} de {total}
+        {Math.round(progress)}% completo
       </p>
     </div>
   );

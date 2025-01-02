@@ -88,7 +88,7 @@ const Results = () => {
           email: formData.email,
           phone: formData.phone,
           phase: phase,
-          ebook_id: ebook?.file_path
+          ebook_id: ebook?.file_path // Changed from file_path to id
         });
 
       if (error) throw error;
