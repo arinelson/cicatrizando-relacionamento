@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { questions } from "@/data/questions";
-import ProgressBar from "@/components/ProgressBar";
-import QuizOption from "@/components/QuizOption";
+import { ProgressBar } from "@/components/ProgressBar";
+import { QuizOption } from "@/components/QuizOption";
 
 const Quiz = () => {
   const navigate = useNavigate();
