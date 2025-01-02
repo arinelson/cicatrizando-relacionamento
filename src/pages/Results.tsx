@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const phaseInfo = {
@@ -92,11 +92,16 @@ const Results = () => {
       const url = window.URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
-      a.download = ebook.title + '.pdf';
+      a.download = ebook.file_path;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      toast({
+        title: "Download iniciado!",
+        description: "Seu eBook está sendo baixado.",
+      });
 
       // Navigate to thank you page
       navigate("/thank-you");
