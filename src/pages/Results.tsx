@@ -110,6 +110,8 @@ const Results = () => {
     }
   };
 
+  const currentPhaseInfo = phaseInfo[phase as keyof typeof phaseInfo];
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -122,12 +124,12 @@ const Results = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-purple-50 to-blue-50">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6 md:p-8 animate-fade-in">
         <h1 className="text-3xl md:text-4xl font-bold text-primary mb-6">
-          {info.title}
+          {currentPhaseInfo.title}
         </h1>
         
         <p className="text-lg text-gray-600 mb-8">
           {userData?.name ? `Olá ${userData.name}, ` : ""}
-          {info.description}
+          {currentPhaseInfo.description}
         </p>
 
         {ebook ? (
