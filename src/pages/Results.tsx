@@ -42,10 +42,20 @@ const Results = () => {
           .from('ebooks')
           .select('title, file_path')
           .eq('phase', phase)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
-        if (data) setEbook(data);
+        
+        if (!data) {
+          toast({
+            title: "eBook não encontrado",
+            description: "Não foi possível encontrar o eBook para esta fase",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        setEbook(data);
       } catch (error) {
         console.error('Error fetching ebook:', error);
         toast({
@@ -62,7 +72,14 @@ const Results = () => {
   }, [phase, toast]);
 
   const handleDownload = async () => {
-    if (!ebook?.file_path) return;
+    if (!ebook?.file_path) {
+      toast({
+        title: "eBook não disponível",
+        description: "O eBook para esta fase ainda não está disponível",
+        variant: "destructive"
+      });
+      return;
+    }
 
     try {
       const { data, error } = await supabase.storage
@@ -93,8 +110,6 @@ const Results = () => {
     }
   };
 
-  const info = phaseInfo[phase as keyof typeof phaseInfo];
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -115,7 +130,7 @@ const Results = () => {
           {info.description}
         </p>
 
-        {ebook && (
+        {ebook ? (
           <div className="bg-muted p-6 rounded-lg mb-8">
             <h2 className="text-xl font-semibold mb-4">
               Seu eBook está pronto:
@@ -129,6 +144,15 @@ const Results = () => {
             >
               Baixar eBook Agora
             </Button>
+          </div>
+        ) : (
+          <div className="bg-muted p-6 rounded-lg mb-8">
+            <h2 className="text-xl font-semibold mb-4">
+              eBook não disponível
+            </h2>
+            <p className="text-gray-600">
+              Desculpe, o eBook para esta fase ainda não está disponível.
+            </p>
           </div>
         )}
       </div>
